@@ -1,0 +1,82 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Leaflet JS Test</title>
+    <meta charset="utf-8" />
+
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <link rel="stylesheet" type="text/css" href="./leaflet.css">
+    <style type="text/css">
+        html,
+        body {
+            height: 100%;
+            min-height: 100%;
+            margin: 0;
+        }
+        #map {
+            width: 100%;
+            height: 100%;
+        }
+    </style>
+</head>
+<body>
+    <div id="map"></div>
+    <script type="text/javascript" src="./india.js"></script>
+    <script type="text/javascript" src="./leaflet.js"></script>
+    <script type="text/javascript">
+        var map = L.map('map');
+
+        var osmLayer = new L.TileLayer(
+            'http://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png',
+            {
+                attribution: 'Map Data (C)'
+            }
+        );
+
+        map.addLayer(osmLayer);
+
+        var llarray = [];
+
+        var geojson = L.geoJson(india, {
+            onEachFeature: function (feature, layer) {
+                var popupContent = "<h4>" + feature.properties.name + "</h4>";
+                if (feature.properties.photos !== undefined) {
+                    var count = feature.properties.photos.length;
+                    popupContent += "<ul class=\"photo-preview-list\">";
+                    for (var i = count - 1; i >= 0; i--) {
+                        popupContent += "<li><img src=\"./photos/" + feature.properties.photos[i] + "\" alt=\"Preview\" width=\"30\" height=\"30\" /></li>";
+                    }
+                    popupContent += "</ul>";
+                }
+                layer.bindPopup(popupContent);
+                llarray.push([feature.geometry.coordinates[1], feature.geometry.coordinates[0]]);
+            }
+        }).addTo(map);
+
+        L.geoJson(route1, {
+            style: route1Style
+        }).addTo(map);
+
+        L.geoJson(route2, {
+            style: route2Style
+        }).addTo(map);
+
+        L.geoJson(route3, {
+            style: route3Style
+        }).addTo(map);
+
+        L.geoJson(route4, {
+            style: route4Style
+        }).addTo(map);
+
+        L.geoJson(route5, {
+            style: route5Style
+        }).addTo(map);
+
+        var llbounds = L.latLngBounds(llarray);
+        map.fitBounds(llbounds);
+
+    </script>
+</body>
+</html>
